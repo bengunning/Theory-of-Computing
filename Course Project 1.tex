@@ -1,0 +1,160 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=.5in]{geometry}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\renewcommand\qedsymbol{$\blacksquare$}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{verbatim}
+\usepackage[none]{hyphenat}
+
+\setlength\parindent{0pt}
+
+\title{\textbf{\Large{On Minimization of Deterministic Finite Automata}} \\ \large{\textbf{The Myhill-Nerode Theorem and Uniqueness of Minimal DFAs}}}
+\author{Ben Gunning}
+\date{\today}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+\maketitle
+
+
+
+\section*{Abstract}
+The Myhill-Nerode Theorem is an important and interesting result in the study of the class of all regular languages. In particular, this result establishes an additional necessary and sufficient condition for the classification of regular languages beyond the usual usage of finite automata and regular expressions.
+The result further enables proof of the existence and uniqueness of a minimal deterministic finite automaton recognizing a given regular language. This result gives rise to the task of deterministic finite automaton (DFA) minimization.
+
+\section*{Foreword}
+The following report is 
+
+\section{Indistinguishability of Strings}
+
+In order to proceed with a discussion of the Myhill-Nerode Theorem, we must first establish some foundational definitions and results.
+
+\begin{definition}[Indistinguishability]
+Let $L$ be a language such that $x,y \in L$. We say that $x$ and $y$ are \emph{indistinguishable by L} if the following criterion holds:
+\[ \forall z \in L \quad (xz \in L \wedge yz \in L) \vee (xz \notin L \wedge yz \notin L) \]
+Two strings $x$ and $y$ are called \emph{distinguishable} if they are not indistinguishable. This is equivalent to the existence of a string $z \in L$ such that exactly one of $xz,yz$ is an element of $L$.
+\end{definition}
+
+\begin{definition}[Equivalence Relation]
+Let $\sim$ be a relation on a language $L$. $\sim$ is called an \emph{equivalence relation} if each of the following criteria is satisfied:
+\begin{itemize}
+	\item{$\forall x \in L \quad x \sim x$}
+	\item{$\forall x,y \in L \quad x \sim y \Leftrightarrow y \sim x$}
+	\item{$\forall x,y,z \in L \quad x \sim y \wedge y \sim z \Rightarrow x \sim z$}
+\end{itemize}
+\end{definition}
+
+We now prove a short but useful result that will prove handy in our later discussion of the Myhill-Nerode Theorem.
+
+\begin{lemma}
+Given a language $L$ and $\sim$ such that $x \sim y$ if and only if $x$ and $y$ are indistinguishable by $L$, the relation $\sim$ is an equivalence relation.
+\end{lemma}
+
+\begin{proof}
+The reflexivity of $\sim$ is trivial, as is symmetry. The only property that warrants further discussion is transitivity.
+
+Let $x,y,z \in L$ such that $x \sim y$ and $y \sim z$. Fix $w \in L$. By the indistinguishability of $x$ and $y$, $xw \in L \Leftrightarrow yw \in L$. Similarly, $yw \in L \Leftrightarrow zw \in L$. Therefore, $xw \in L \Leftrightarrow zw \in L$, so $x \sim z$.
+
+The satisfaction of these properties proves that $\sim$ is an equivalence relation over $L$.
+\end{proof}
+
+Note that because indistinguishability defines an equivalence relation on a language, then it necessarily follows (from the properties of an equivalence relation) that indistinguishability yields a set of one or more equivalence classes over $L$.
+
+\section{Pairwise Distinguishability and the Index}
+
+Having defined and established the notion of indistinguishability of strings, we turn our attention to subsets of languages.
+
+\begin{definition}[Pairwise Distinguishability]
+Let $L$ be a language and $X \subseteq L$ be a set of strings in $L$. We say that $X$ is \emph{pairwise distinguishable by L} if $\forall x,y \in X$ $x$ and $y$ are distinguishable by $L$.
+\end{definition}
+
+\begin{definition}[Index]
+We define the \emph{index of L} to be the maximum over the sizes (number of elements) of all sets that are pairwise distinguishable in $L$.
+\end{definition}
+
+The notion of the index is closely associated with the notion of equivalence classes explained in the last section. In fact, it is intuitive to recognize that the index of a given language is the number of equivalence classes under indistinguishability by said language. A basic understanding of the pigeonhole principle tells us that
+we may pick one element from each equivalence class while maintaining pairwise distinguishability of the set. However, when we have exhausted all of our equivalence classes, we will be unable to pick from any of our equivalence classes without having two indistinguishable strings and violating the condition of pairwise
+distinguishability.
+
+Equipped with an intuitive comprehension of pairwise distinguishability, we now introduce two lemmas: the first seeks to establish an upper bound on the index of a given set, while the second provides a sufficient condition for regularity of a language.
+
+\begin{lemma}
+Given a regular language $L$ recognized by a deterministic finite automaton $M = (Q,\Sigma,\delta_0,q_0,F)$, $L$ has index $\leq |Q|$.
+\end{lemma}
+
+\begin{proof}
+We proceed with a proof by contradiction. Suppose $X=\{x_1,...,x_{k+1}\}$ is pairwise distinguishable by $L$. Then it must be true that at least two of the elements of $X$ end in some state $q \in Q$ when passed as inputs into $M$ (by the pigeonhole principle). Without loss of generality, call these elements $x_1,x_2$.
+
+$x_1$ and $x_2$ are, by definition, distinguishable. Then $\exists y \in L | x_1y \in L \wedge x_2y \notin L$. We assume here, of course, that our choices of $x_1$ and $x_2$ may be swapped with one another to make the previous statement hold. However, $M$ recognizes $x_1y$ if and only if $M$ recognizes $x_2y$, so
+$M$ does not recognize $L$.
+
+This is a contradiction. Therefore the index of $L$ is at most $|Q|$.
+\end{proof}
+
+\begin{lemma}
+Let $L$ be a language with finite index $k$. Then $\exists M$ a deterministic finite automaton such that $M$ recognizes $L$ and $M$ has $k$ states.
+\end{lemma}
+
+\begin{proof}
+We shall prove this result by construction. Consider $M=(Q,\Sigma,\delta_0,q_0,F)$ constructed as follows:
+\begin{enumerate}
+	\item{$Q$ is the set of equivalence classes of $L$ under indistinguishability. Clearly, $|Q| = k$ as desired. Additionally, $Q$ is well-defined because the equivalence classes of $L$ are disjoint and partition $L$.}
+	\item{$\Sigma$ is simply the alphabet corresponding to the set of all symbols appearing in any string of $L$.}
+	\item{$\delta_0:Q$ x $\Sigma \rightarrow Q$ is defined so that $\delta_0(q,a) = [qa]$.}
+	\item{$q_0 = [ \epsilon ]$.}
+	\item{$F$ is the set of all equivalence classes $q$ of $L$ under indistinguishability satisfying $\forall x \in q \quad x\epsilon \in L$.}
+\end{enumerate}
+
+$M$ recognizes $L$ and satisfies the property that it must possess exactly $k$ states. This completes our proof.
+\end{proof}
+
+With these two results proven, we are now ready for the Myhill-Nerode Theorem.
+
+\section{Myhill-Nerode}
+
+\begin{theorem}[Myhill-Nerode Theorem]
+A language $L$ is regular if and only if it has finite index. Furthermore, the index of $L$ is the number of states contained in the smallest deterministic finite automaton recognizing $L$.
+\end{theorem}
+
+\begin{proof}
+Somewhat anticlimactically, the theorem follows immediately from the two lemmas in the previous section. Lemma 2.3 gives us the forward implication, while Lemma 2.4 gives us the reverse. Together, the two lemmas give the second result as well.
+\end{proof}
+
+\begin{corollary}
+The deterministic finite automaton defined in Lemma 2.4 is the unique minimal deterministic finite automaton recognizing a language $L$.
+\end{corollary}
+
+\begin{proof}
+We know that $M$ is minimal, but is it unique? Suppose that $M'=(Q',\Sigma,\delta_0',q_0',F')$ is a deterministic finite automaton that recognizes $L$ and satisfies the condition $|Q'| = k$.
+
+Suppose that there exists some state $q' \in Q'$ such that there does not exist $q \in Q$ such that the strings that end up in $q$ are the same strings that end up in $q'$. This means that there exist distinguishable strings $x,y \in L$ that both end up in some state $q'' \in Q'$ by the pigeonhole principle. The logic applied
+in Lemma 2.3 gives us a contradiction, so $Q'=Q$. It immediately follows from the fact that $M'$ recognizes $L$ that $q_0'=q_0$, $F'=F$, and $\delta_0'=\delta_0$.
+\end{proof}
+
+\section{Applications}
+
+The Myhill-Nerode Theorem and the uniqueness of the minimal deterministic finite automaton recognizing a given regular language has interesting applications. Most notably, 
+
+
+
+\begin{thebibliography}{9}
+
+\bibitem{Nerode}
+Nerode, Anil. "Linear Automaton Transformations." \textit{Proceedings of the American Mathematical Society} August 1958: 541-544. Print.
+
+\bibitem{Sipser}
+Sipser, Michael. \textit{Introduction to the Theory of Computation}. Boston: Course Technology, 2006. Print.
+
+\end{thebibliography}
+
+\end{document}
